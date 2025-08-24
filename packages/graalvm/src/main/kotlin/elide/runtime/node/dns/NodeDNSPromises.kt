@@ -41,8 +41,6 @@ import elide.runtime.lang.javascript.NodeModuleName
  */
 internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNSPromisesAPI {
 
-  private var defaultOrder: String = "verbatim"
-
   private var defaultResultOrder: String = "verbatim"
 
   private fun resolveNow(hostname: String, ipv6: Boolean?): List<String> {
