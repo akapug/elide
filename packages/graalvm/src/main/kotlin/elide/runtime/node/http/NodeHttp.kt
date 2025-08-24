@@ -195,7 +195,7 @@ internal class NodeHttp private constructor (
     // server/request shims
     "createServer" -> ProxyExecutable { args ->
       // optional request handler function
-      val handler = args.firstOrNull()?.takeIf { it != null && it.canExecute() }
+      val handler = args.firstOrNull()?.takeIf { it.canExecute() }
 
       // build server components
       val config = NettyServerConfig()
