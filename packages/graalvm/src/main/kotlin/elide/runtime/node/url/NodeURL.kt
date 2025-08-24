@@ -30,6 +30,7 @@ import org.graalvm.polyglot.proxy.ProxyExecutable
 import org.graalvm.polyglot.proxy.ProxyObject
 import java.net.IDN
 import java.net.URI
+import java.nio.file.Path
 import java.nio.file.Paths
 
 // Constructor for `URL`.
