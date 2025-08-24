@@ -241,7 +241,7 @@ internal class NodeHttp private constructor (
             }
           }
           "close" -> ProxyExecutable { largs ->
-            val cb = largs.lastOrNull()?.takeIf { it != null && it.canExecute() }
+            val cb = largs.lastOrNull()?.takeIf { it.canExecute() }
 
             // downcast to NettyServerEngine to access stop()
             val netty = engine as NettyServerEngine
