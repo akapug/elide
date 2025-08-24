@@ -74,7 +74,7 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
       "AAAA" -> addrs.filterIsInstance<java.net.Inet6Address>()
       else -> addrs
     }
-    val ordered = when (defaultOrder) {
+    val ordered = when (defaultResultOrder) {
       "ipv4first" -> filtered.sortedWith(compareBy({ it is java.net.Inet6Address }))
       else -> filtered
     }
@@ -146,11 +146,11 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
 
     "setDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { args ->
       val mode = args.getOrNull(0)?.asString()?.lowercase() ?: "verbatim"
-      defaultOrder = if (mode == "ipv4first") "ipv4first" else "verbatim"
-      elide.runtime.intrinsics.js.JsPromise.resolved(defaultOrder)
+      defaultResultOrder = if (mode == "ipv4first") "ipv4first" else "verbatim"
+      elide.runtime.intrinsics.js.JsPromise.resolved(defaultResultOrder)
     }
 
-    "getDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { _ -> elide.runtime.intrinsics.js.JsPromise.resolved(defaultOrder) }
+    "getDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { _ -> elide.runtime.intrinsics.js.JsPromise.resolved(defaultResultOrder) }
 
   override fun getMemberKeys(): Array<String> = arrayOf(
     "Resolver",
