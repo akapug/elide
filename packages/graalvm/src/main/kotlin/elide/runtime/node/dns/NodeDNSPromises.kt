@@ -153,5 +153,6 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
 
     "getDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { _ -> elide.runtime.intrinsics.js.JsPromise.resolved(defaultResultOrder) }
 
+    else -> null
 
 }
