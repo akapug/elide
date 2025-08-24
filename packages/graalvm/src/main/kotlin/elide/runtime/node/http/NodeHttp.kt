@@ -213,9 +213,9 @@ internal class NodeHttp private constructor (
         override fun getMember(key: String?): Any? = when (key) {
           "listen" -> ProxyExecutable { largs ->
             // parse (port?, host?, callback?)
-            val portArg = largs.getOrNull(0)?.takeIf { it != null && it.isNumber }?.asInt()
-            val hostArg = largs.getOrNull(1)?.takeIf { it != null && it.isString }?.asString()
-            val cb = largs.lastOrNull()?.takeIf { it != null && it.canExecute() }
+            val portArg = largs.getOrNull(0)?.takeIf { it.isNumber }?.asInt()
+            val hostArg = largs.getOrNull(1)?.takeIf { it.isString }?.asString()
+            val cb = largs.lastOrNull()?.takeIf { it.canExecute() }
 
             // apply config
             portArg?.let { config.port = it }
