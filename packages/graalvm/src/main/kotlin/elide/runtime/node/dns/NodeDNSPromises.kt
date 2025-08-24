@@ -72,6 +72,7 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
     val filtered = when (family) {
       "A" -> addrs.filterIsInstance<java.net.Inet4Address>()
       "AAAA" -> addrs.filterIsInstance<java.net.Inet6Address>()
+      null -> addrs
       else -> addrs
     }
     val ordered = when (defaultResultOrder) {
