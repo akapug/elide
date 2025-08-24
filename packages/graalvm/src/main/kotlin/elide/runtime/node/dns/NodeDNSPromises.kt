@@ -156,3 +156,4 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
     else -> null
 
 }
+}
