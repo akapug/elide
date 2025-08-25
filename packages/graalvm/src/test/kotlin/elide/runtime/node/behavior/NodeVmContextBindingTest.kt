@@ -11,7 +11,7 @@ import kotlin.test.Test
   override val moduleName: String get() = "vm"
   override fun provide(): elide.runtime.node.vm.NodeVmModule = elide.runtime.node.vm.NodeVmModule()
 
-  @Test fun `runInNewContext binds sandbox members`() = test {
+  @Test fun `runInNewContext binds sandbox members`() {
     val code = """
       const vm = require('node:vm');
       const ctx = {x: 41};
@@ -19,10 +19,10 @@ import kotlin.test.Test
       if (res !== 42) throw new Error('bad');
       'ok';
     """.trimIndent()
-    executeGuest(code)
+    executeGuest(true) { code }.doesNotFail()
   }
 
-  @Test fun `runInContext binds provided context members`() = test {
+  @Test fun `runInContext binds provided context members`() {
     val code = """
       const vm = require('node:vm');
       const ctx = vm.createContext({x: 10});
@@ -30,7 +30,7 @@ import kotlin.test.Test
       if (res !== 20) throw new Error('bad');
       'ok';
     """.trimIndent()
-    executeGuest(code)
+    executeGuest(true) { code }.doesNotFail()
   }
 }
 

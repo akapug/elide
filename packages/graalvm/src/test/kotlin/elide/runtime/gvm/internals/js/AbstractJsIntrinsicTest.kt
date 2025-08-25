@@ -254,20 +254,22 @@ internal abstract class AbstractJsIntrinsicTest<T : GuestIntrinsic>(
       }
     }
     return object : DualTestExecutionProxy<JavaScript>() {
-      override fun guest(guestOperation: JavaScript) = GuestTestExecution(::withContext) {
-        executeGuestInternal(
-          this,
-          bind,
-          bindUtils = true,
-          bindPrimordials = true,
-          bindAssert = true,
-          bindConsole = true,
-          bindBase64 = true,
-          bindBuffer = true,
-          esm = false,
-          guestOperation,
-        )
-      }.doesNotFail()
+      override fun guest(guestOperation: JavaScript) {
+        GuestTestExecution(::withContext) {
+          executeGuestInternal(
+            this,
+            bind,
+            bindUtils = true,
+            bindPrimordials = true,
+            bindAssert = true,
+            bindConsole = true,
+            bindBase64 = true,
+            bindBuffer = true,
+            esm = false,
+            guestOperation,
+          )
+        }.doesNotFail()
+      }
 
       override fun thenRun(guestOperation: JavaScript) = GuestTestExecution(::withContext) {
         executeGuestInternal(

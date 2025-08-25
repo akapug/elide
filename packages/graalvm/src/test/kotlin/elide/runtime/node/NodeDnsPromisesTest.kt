@@ -61,7 +61,7 @@ import elide.testing.annotations.TestCase
       const res = await dns.resolve("localhost");
       ({ isArray: Array.isArray(res) })
     """.trimIndent()
-    val out = executeESM(true) { code }.doesNotFail().returnValue()
+    val out = assertNotNull(executeESM(true) { code }.doesNotFail().returnValue())
     assertTrue(out.hasMembers())
     assertTrue(out.getMember("isArray").asBoolean())
   }
@@ -72,7 +72,7 @@ import elide.testing.annotations.TestCase
       const res = await dns.resolve4("localhost");
       ({ ok: Array.isArray(res) && res.every(x => typeof x === 'string' && x.includes('.')) })
     """.trimIndent()
-    val out = executeESM(true) { code }.doesNotFail().returnValue()
+    val out = assertNotNull(executeESM(true) { code }.doesNotFail().returnValue())
     assertTrue(out.hasMembers())
     assertTrue(out.getMember("ok").asBoolean())
   }
@@ -83,7 +83,7 @@ import elide.testing.annotations.TestCase
       const res = await dns.resolve6("localhost");
       ({ ok: Array.isArray(res) && res.every(x => typeof x === 'string' && x.includes(':')) })
     """.trimIndent()
-    val out = executeESM(true) { code }.doesNotFail().returnValue()
+    val out = assertNotNull(executeESM(true) { code }.doesNotFail().returnValue())
     assertTrue(out.hasMembers())
     assertTrue(out.getMember("ok").asBoolean())
   }
@@ -94,7 +94,7 @@ import elide.testing.annotations.TestCase
       const res = await dns.reverse("127.0.0.1");
       ({ isArray: Array.isArray(res) })
     """.trimIndent()
-    val out = executeESM(true) { code }.doesNotFail().returnValue()
+    val out = assertNotNull(executeESM(true) { code }.doesNotFail().returnValue())
     assertTrue(out.hasMembers())
     assertTrue(out.getMember("isArray").asBoolean())
   }
@@ -106,7 +106,7 @@ import elide.testing.annotations.TestCase
       const order = dns.getDefaultResultOrder();
       ({ order })
     """.trimIndent()
-    val out = executeESM(true) { code }.doesNotFail().returnValue()
+    val out = assertNotNull(executeESM(true) { code }.doesNotFail().returnValue())
     assertTrue(out.hasMembers())
     assertEquals("ipv4first", out.getMember("order").asString())
   }
@@ -131,7 +131,7 @@ import elide.testing.annotations.TestCase
       ]);
       ({ ok: res.every(x => x === 'ENOTSUP') })
     """.trimIndent()
-    val out = executeESM(true) { code }.doesNotFail().returnValue()
+    val out = assertNotNull(executeESM(true) { code }.doesNotFail().returnValue())
     assertTrue(out.hasMembers())
     assertTrue(out.getMember("ok").asBoolean())
   }

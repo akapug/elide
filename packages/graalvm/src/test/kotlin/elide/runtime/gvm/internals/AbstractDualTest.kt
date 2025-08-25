@@ -419,9 +419,11 @@ abstract class AbstractDualTest<Generator : CodeGenerator> {
       }
     }
 
-    /** Stubbed `Unit` returning function which ties off the execution. */
-    fun doesNotFail(): Unit = thenAssert {
-      // nothing: stubbed
+    /** Fluent helper which executes the test and asserts it does not fail, returning this for chaining. */
+    fun doesNotFail(): GuestTestExecution = apply {
+      thenAssert {
+        // nothing: stubbed
+      }
     }
 
     /** Stubbed `Unit` returning function which expects failure. */
