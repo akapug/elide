@@ -28,9 +28,10 @@ private val ALL_MEMBERS = arrayOf(
   F_TO_UNICODE,
 )
 
-@Intrinsic internal class NodePunycodeModule : AbstractNodeBuiltinModule() {
+@Intrinsic
+@elide.annotations.Factory internal class NodePunycodeModule : AbstractNodeBuiltinModule() {
   private val singleton by lazy { NodePunycode.create() }
-  internal fun provide(): PunycodeAPI = singleton
+  @elide.annotations.Singleton internal fun provide(): PunycodeAPI = singleton
 
   override fun install(bindings: MutableIntrinsicBindings) {
     ModuleRegistry.deferred(ModuleInfo.of(NodeModuleName.PUNYCODE)) { singleton }
@@ -55,11 +56,11 @@ internal class NodePunycode private constructor() : ReadOnlyProxyObject, Punycod
     // Placeholders for raw punycode encode/decode (not domain functions)
     F_ENCODE -> ProxyExecutable { args ->
       val input = args.getOrNull(0)?.asString() ?: ""
-      elide.runtime.node.punycode.PunycodeAlgo.encode(input)
+      PunycodeAlgo.encode(input)
     }
     F_DECODE -> ProxyExecutable { args ->
       val input = args.getOrNull(0)?.asString() ?: ""
-      elide.runtime.node.punycode.PunycodeAlgo.decode(input)
+      PunycodeAlgo.decode(input)
     }
     else -> null
   }
