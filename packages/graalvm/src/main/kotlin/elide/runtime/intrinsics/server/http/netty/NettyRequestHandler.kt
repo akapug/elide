@@ -251,9 +251,18 @@ private fun Response.asNetty(): HttpResponse = when (body) {
       val response = NettyMutableHttpResponse.empty()
 
       // resolve the handler pipeline (or default to 'not found' if empty)
-      router.pipeline(request, context).forEach { handler ->
+      val pipelineSeq = router.pipeline(request, context)
+      // IMPORTANT: sequences are single-use; materialize before counting/iterating
+      val handlersList = pipelineSeq.toList()
+      logging.debug { "Processing request ${request.method.symbol} ${request.url.path} with ${handlersList.size} handlers" }
+
+      handlersList.forEach { handler ->
+        logging.debug { "Executing handler: ${handler::class.simpleName}" }
         when (handler) {
-          is GuestSimpleHandler -> handled = handler(request, response, context)
+          is GuestSimpleHandler -> {
+            handled = handler(request, response, context)
+            logging.debug { "GuestSimpleHandler returned: $handled" }
+          }
           is GuestAsyncHandler -> handler(request, response, context).also {
             assert(handled == false)
             handled = true
@@ -268,6 +277,7 @@ private fun Response.asNetty(): HttpResponse = when (body) {
       }
 
       if (!handled) {
+        logging.debug { "No handler processed the request, sending 404" }
         channelContext.writeAndFlush(
           DefaultHttpResponse(
             /* version = */ HttpVersion.HTTP_1_1,

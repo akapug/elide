@@ -108,7 +108,12 @@ private val HTTP_SERVER_INTRINSIC_PROPS_AND_METHODS = arrayOf(
 
       // notify listeners if applicable
       logging.debug { "Server listening at $address" }
-      config.onBindCallback?.invoke()
+      config.onBindCallback?.let { callback ->
+        // Execute callback on guest executor thread to handle polyglot context properly
+        exec.executor().execute {
+          callback.invoke()
+        }
+      }
     }
   }
 

@@ -97,10 +97,15 @@ internal class NodeStreamConsumers : ReadOnlyProxyObject, StreamConsumersAPI {
           }
           pump()
         } else {
-          // AsyncIterable path: for await (chunk of v)
-          val bindings = Context.getCurrent().getBindings("js")
-          val asyncIterSym = bindings.getMember("Symbol").getMember("asyncIterator")
-          val iterator = v.getMember(asyncIterSym.asString())?.execute()
+          // AsyncIterable path: support AsyncGenerator instances (with .next()) and generic AsyncIterable via Symbol.asyncIterator
+          val ctx = Context.getCurrent()
+          val iterator: Value? = when {
+            v.getMember("next")?.canExecute() == true -> v // already an AsyncIterator
+            else -> try {
+              val helper = ctx.eval("js", "(function(x){ return (x && x[Symbol.asyncIterator]) ? x[Symbol.asyncIterator]() : null; })")
+              helper.execute(v)
+            } catch (_: Throwable) { null }
+          }
           if (iterator != null && iterator.hasMembers()) {
             val nextFn = iterator.getMember("next")
             val chunks = mutableListOf<Byte>()
