@@ -32,7 +32,7 @@ import elide.runtime.intrinsics.server.http.HttpResponse
 ) : GuestHandler, GuestHandlerFunction<Boolean> {
   override fun invoke(request: Request, response: MutableResponse, context: HttpContext): Boolean {
     HttpRequest.of(request).let { wrapped ->
-      val responder = HttpResponse.of(response, context.channelContext)
+      val responder = HttpResponse.of(response, context.channelContext, context)
       return value.execute(wrapped, responder, context).let { result ->
         when {
           result.isBoolean -> result.asBoolean()

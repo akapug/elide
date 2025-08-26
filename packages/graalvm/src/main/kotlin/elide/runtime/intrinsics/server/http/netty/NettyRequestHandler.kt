@@ -278,7 +278,7 @@ private fun Response.asNetty(): HttpResponse = when (body) {
           ),
         )
         channelContext.close()
-      } else if (doFlush) {
+      } else if (doFlush && !context.responseSent) {
         logging.debug("Request processing complete, flushing response")
         channelContext.flush()
         channelContext.close()

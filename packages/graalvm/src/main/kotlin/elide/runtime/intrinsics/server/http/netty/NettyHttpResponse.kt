@@ -44,6 +44,7 @@ private val NETTY_HTTP_RESPONSE_PROPS_AND_METHODS = arrayOf(
   "header",
   "send",
   "set",
+  "setHeader",
   "status",
   "statusCode",
 )
@@ -52,6 +53,7 @@ private val NETTY_HTTP_RESPONSE_PROPS_AND_METHODS = arrayOf(
 @DelicateElideApi internal class NettyHttpResponse(
   private val context: ChannelHandlerContext,
   private val includeDefaults: Boolean = true,
+  private val httpContext: elide.runtime.intrinsics.server.http.HttpContext? = null,
 )
   : HttpResponse, ProxyObject {
   /** Whether the response has already been sent. */
@@ -158,8 +160,12 @@ private val NETTY_HTTP_RESPONSE_PROPS_AND_METHODS = arrayOf(
       )
     }
 
-    // send the response
-    context.write(response)
+    // send the response immediately and close the connection to guarantee delivery
+    context.writeAndFlush(response)
+    context.close()
+
+    // Mark response as sent to prevent double-handling in NettyRequestHandler
+    httpContext?.responseSent = true
   }
 
   override fun getMemberKeys(): Array<String> = NETTY_HTTP_RESPONSE_PROPS_AND_METHODS
@@ -226,6 +232,16 @@ private val NETTY_HTTP_RESPONSE_PROPS_AND_METHODS = arrayOf(
       }
     }
 
+    "setHeader" -> ProxyExecutable {
+      val name = it.getOrNull(0)
+      val value = it.getOrNull(1)
+      when {
+        name == null || !name.isString -> throw JsError.valueError("Header name must be a string")
+        value == null -> throw JsError.typeError("Header value is required")
+        else -> header(name.asString(), value.asString())
+      }
+    }
+
     "send" -> ProxyExecutable {
       val status = it.getOrNull(0)
       val body = it.getOrNull(1)
@@ -254,5 +270,8 @@ private val NETTY_HTTP_RESPONSE_PROPS_AND_METHODS = arrayOf(
   companion object {
     @JvmStatic fun from(res: Response, ctx: ChannelHandlerContext, includeDefaults: Boolean = true): NettyHttpResponse =
       NettyHttpResponse(ctx, includeDefaults)
+
+    @JvmStatic fun from(res: Response, ctx: ChannelHandlerContext, httpContext: elide.runtime.intrinsics.server.http.HttpContext, includeDefaults: Boolean = true): NettyHttpResponse =
+      NettyHttpResponse(ctx, includeDefaults, httpContext)
   }
 }

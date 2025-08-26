@@ -19,6 +19,7 @@ import kotlin.test.assertEquals
 import elide.annotations.Inject
 import elide.runtime.node.http.NodeHttpModule
 import elide.testing.annotations.TestCase
+import elide.runtime.plugins.js.javascript
 import java.net.ServerSocket
 import java.net.HttpURLConnection
 import java.net.URL
@@ -63,7 +64,8 @@ import java.net.URL
       """
         import http from "http";
         const server = http.createServer((req, res) => {});
-        server;
+        export const listen = (...args) => server.listen(...args);
+        export const close = (...args) => server.close(...args);
       """.trimIndent(),
       esm = true,
     )
@@ -84,7 +86,8 @@ import java.net.URL
           res.end("ok");
         });
         await new Promise(resolve => server.listen($port, "127.0.0.1", resolve));
-        ({ ready: true, close: () => new Promise(r => server.close(() => r(true))) })
+        export const ready = true;
+        export const close = () => new Promise(r => server.close(() => r(true)));
       """.trimIndent(),
       esm = true,
     )
@@ -92,7 +95,7 @@ import java.net.URL
     assertTrue(out.getMember("ready").asBoolean())
 
     // issue a request from the host and assert the response
-    val url = URL("http://127.0.0.1:$port/")
+    val url = java.net.URI.create("http://127.0.0.1:$port/").toURL()
     val conn = (url.openConnection() as HttpURLConnection).apply {
       requestMethod = "GET"
       connectTimeout = 2000

@@ -34,8 +34,8 @@ internal class NodeHttpFlowTest : NodeModuleConformanceTest<NodeHttpModule>() {
     """.trimIndent()
     executeGuest(true) { code }.doesNotFail()
     // We don't perform a real HTTP client fetch here; the purpose is to ensure listen() doesn't throw and address() is callable
-    val server = require("node:http").getMember("createServer").execute().asHostObject<Any>()
-    assertNotNull(server)
+    val server = assertNotNull(require("node:http").getMember("createServer"))
+    assertTrue(server.canExecute())
   }
 }
 

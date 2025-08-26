@@ -27,6 +27,8 @@ import elide.runtime.exec.GuestExecutor
   internal val exec: GuestExecutor,
   internal val channelContext: ChannelHandlerContext,
 ) : MutableMap<String, Any?> by map, ProxyObject {
+  /** Flag to indicate if the response has been sent and channel closed. */
+  internal var responseSent: Boolean = false
   /** Constructs a new empty context. */
   internal constructor(exec: GuestExecutor, chan: ChannelHandlerContext) : this(mutableMapOf(), exec, chan)
 

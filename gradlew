@@ -25,7 +25,7 @@
 #   Important for running:
 #
 #   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
-#       noncompliant, but you have some other compliant shell such as ksh or
+#       noncompliant, but you have some other compliant shell such as ksh o
 #       bash, then to run this script, type that shell name before the whole
 #       command line, like:
 #
@@ -238,7 +238,7 @@ fi
 # that process (while maintaining the separation between arguments), and wrap
 # the whole thing up as a single "set" statement.
 #
-# This will of course break if any of these variables contains a newline or
+# This will of course break if any of these variables contains a newline o
 # an unmatched quote.
 #
 

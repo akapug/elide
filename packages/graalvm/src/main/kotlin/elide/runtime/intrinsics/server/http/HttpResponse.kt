@@ -59,5 +59,9 @@ import elide.vm.annotations.Polyglot
     /** @return Create an [HttpResponse] from a [Response]. */
     @JvmStatic public fun of(response: Response, ctx: ChannelHandlerContext): HttpResponse =
       NettyHttpResponse.from(response, ctx, includeDefaults = true)
+
+    /** @return Create an [HttpResponse] from a [Response] with HttpContext. */
+    @JvmStatic public fun of(response: Response, ctx: ChannelHandlerContext, httpContext: HttpContext): HttpResponse =
+      NettyHttpResponse.from(response, ctx, httpContext, includeDefaults = true)
   }
 }
