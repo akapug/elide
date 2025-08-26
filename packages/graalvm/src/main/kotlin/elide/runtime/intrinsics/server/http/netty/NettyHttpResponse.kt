@@ -160,9 +160,8 @@ private val NETTY_HTTP_RESPONSE_PROPS_AND_METHODS = arrayOf(
       )
     }
 
-    // send the response immediately and close the connection to guarantee delivery
-    context.writeAndFlush(response)
-    context.close()
+    // send the response and close the connection after the write completes to guarantee delivery
+    context.writeAndFlush(response).addListener(io.netty.channel.ChannelFutureListener.CLOSE)
 
     // Mark response as sent to prevent double-handling in NettyRequestHandler
     httpContext?.responseSent = true

@@ -194,20 +194,17 @@ private fun Response.asNetty(): HttpResponse = when (body) {
         )
 
         is Response -> logging.debug { "Guest handler returned Elide response: $result" }.also {
-          ctx.writeAndFlush(result.asNetty())
-          ctx.close()
+          ctx.writeAndFlush(result.asNetty()).addListener(io.netty.channel.ChannelFutureListener.CLOSE)
         }
 
         is HttpResponse -> logging.debug { "Guest handler returned Netty response: $result" }.also {
-          ctx.writeAndFlush(result)
-          ctx.close()
+          ctx.writeAndFlush(result).addListener(io.netty.channel.ChannelFutureListener.CLOSE)
         }
 
         is Value -> when {
           result.isHostObject -> result.asHostObject<FetchResponseIntrinsic>().let { response ->
             logging.debug { "Guest handler returned Elide response: $response" }.also {
-              ctx.writeAndFlush(response.asNetty())
-              ctx.close()
+              ctx.writeAndFlush(response.asNetty()).addListener(io.netty.channel.ChannelFutureListener.CLOSE)
             }
           }
 
@@ -276,11 +273,11 @@ private fun Response.asNetty(): HttpResponse = when (body) {
             /* version = */ HttpVersion.HTTP_1_1,
             /* status = */ HttpResponseStatus.NOT_FOUND,
           ),
-        )
-        channelContext.close()
+        ).addListener(io.netty.channel.ChannelFutureListener.CLOSE)
       } else if (doFlush && !context.responseSent) {
         logging.debug("Request processing complete, flushing response")
         channelContext.flush()
+        // in case the channel hasn't been closed by a write, close it now
         channelContext.close()
       }
     } catch (err: Throwable) {
@@ -290,8 +287,7 @@ private fun Response.asNetty(): HttpResponse = when (body) {
           /* version = */ HttpVersion.HTTP_1_1,
           /* status = */ HttpResponseStatus.INTERNAL_SERVER_ERROR,
         ),
-      )
-      channelContext.close()
+      ).addListener(io.netty.channel.ChannelFutureListener.CLOSE)
     }
   }
 
