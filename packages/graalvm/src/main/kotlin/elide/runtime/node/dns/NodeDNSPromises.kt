@@ -91,6 +91,17 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
     "reverse",
     "setDefaultResultOrder",
     "getDefaultResultOrder",
+    // unsupported types (present to match Node shape; reject on call)
+    "resolveAny",
+    "resolveCname",
+    "resolveCaa",
+    "resolveMx",
+    "resolveNaptr",
+    "resolveNs",
+    "resolvePtr",
+    "resolveSoa",
+    "resolveSrv",
+    "resolveTxt",
   )
 
   override fun getMember(key: String?): Any? = when (key) {
@@ -148,10 +159,26 @@ internal class NodeDNSPromises private constructor () : ReadOnlyProxyObject, DNS
     "setDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { args ->
       val mode = args.getOrNull(0)?.asString()?.lowercase() ?: "verbatim"
       defaultResultOrder = if (mode == "ipv4first") "ipv4first" else "verbatim"
-      elide.runtime.intrinsics.js.JsPromise.resolved(defaultResultOrder)
+      // Node's dns/promises setDefaultResultOrder is synchronous and returns void; return the string for convenience.
+      defaultResultOrder
     }
 
-    "getDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { _ -> elide.runtime.intrinsics.js.JsPromise.resolved(defaultResultOrder) }
+    "getDefaultResultOrder" -> org.graalvm.polyglot.proxy.ProxyExecutable { _ ->
+      // Node's dns/promises getDefaultResultOrder is synchronous and returns the current order.
+      defaultResultOrder
+    }
+
+    // Unsupported RR types: reject with ENOTSUP per test expectation
+    "resolveAny" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveCname" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveCaa" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveMx" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveNaptr" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveNs" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolvePtr" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveSoa" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveSrv" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
+    "resolveTxt" -> ProxyExecutable { elide.runtime.intrinsics.js.JsPromise.rejected<org.graalvm.polyglot.Value>("ENOTSUP") }
 
     else -> null
 

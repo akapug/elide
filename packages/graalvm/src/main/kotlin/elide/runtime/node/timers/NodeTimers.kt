@@ -16,6 +16,7 @@ import elide.runtime.lang.javascript.NodeModuleName
 import org.graalvm.polyglot.Context
 import org.graalvm.polyglot.Value
 import org.graalvm.polyglot.proxy.ProxyExecutable
+import elide.runtime.gvm.internals.js.JsTimersIntrinsic
 
 private const val SET_TIMEOUT = "setTimeout"
 private const val CLEAR_TIMEOUT = "clearTimeout"
@@ -37,6 +38,8 @@ private val ALL_MEMBERS = arrayOf(
 @Factory internal class NodeTimersModule : AbstractNodeBuiltinModule() {
   @Singleton fun provide(): NodeTimers = NodeTimers.obtain()
   override fun install(bindings: MutableIntrinsicBindings) {
+    // Ensure JS global timer intrinsics (setTimeout, clearTimeout, setInterval, clearInterval) are installed
+    JsTimersIntrinsic().install(bindings)
     ModuleRegistry.deferred(ModuleInfo.of(NodeModuleName.TIMERS)) { provide() }
   }
 }
